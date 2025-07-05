@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup
 
 PRODUCTS = {
     "Unkaku": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1141020c1",
-    "Kiwami Choan": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1"
+    "Kiwami Choan": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
+    "POOP": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5"
 }
 
 def check_stock(url):

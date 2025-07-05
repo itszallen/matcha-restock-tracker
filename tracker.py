@@ -11,12 +11,21 @@ PRODUCTS = {
 
 def check_stock(url):
     try:
-        response = requests.get(url)
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+                          " AppleWebKit/537.36 (KHTML, like Gecko)"
+                          " Chrome/103.0.0.0 Safari/537.36"
+        }
+        response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
-        return bool(soup.select_one("button.add-to-cart"))
+        
+        # Amazon's add to cart button has id="add-to-cart-button"
+        add_to_cart = soup.select_one("#add-to-cart-button")
+        return add_to_cart is not None
     except Exception as e:
         print(f"Error checking {url}: {e}")
         return False
+
 
 def notify(name, url):
     # Placeholder: Extend this to send Telegram or email notifications

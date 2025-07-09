@@ -6,12 +6,30 @@ from bs4 import BeautifulSoup
 DISCORD_WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK")
 
 PRODUCTS = {
-    "Unkaku": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1141020c1",
-    "Kiwami Choan": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
-    "Cold brew Gyokuro": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5",
+    # Marukyu Koyamaen products
+    "Unkaku Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1141020c1",
+    "Kiwami Choan Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
+    "Cold Brew Gyokuro": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5",
+    "Asahi Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/11a1040c1",
+    "Sayaka Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1181040c1",
+    "Momoyuki Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1171020c1",
+    "Shirakawa Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1151020c1",
+    "Fumiko Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1131020c1",
+    "Gokujo Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1121020c1",
+    "Tokujou Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1111020c1",
+    "Omatcha Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1161020c1",
+
+    # Amazon test product
     "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9",
-    "Ippodo Matcha To-Go": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets",
-    "Ippodo Sayaka 100g": "https://ippodotea.com/collections/matcha/products/sayaka-100g"
+
+    # Ippodo Tea products
+    "Ippodo Matcha To-Go Packets": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets",
+    "Ippodo Sayaka 100g": "https://ippodotea.com/collections/matcha/products/sayaka-100g",
+    "Ippodo Sayaka no Mukashi": "https://ippodotea.com/collections/matcha/products/sayaka-no-mukashi",
+    "Ippodo Kan Matcha": "https://ippodotea.com/collections/matcha/products/kan",
+    "Ippodo Ikuyo 100g": "https://ippodotea.com/collections/matcha/products/ikuyo-100",
+    "Ippodo Ikuyo": "https://ippodotea.com/collections/matcha/products/ikuyo",
+    "Ippodo Wakaki Shiro": "https://ippodotea.com/collections/matcha/products/wakaki-shiro"
 }
 
 LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account/"
@@ -63,11 +81,9 @@ def check_stock_amazon(url):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Check for "add to cart" or "buy now" buttons
     if soup.select_one("#add-to-cart-button") or soup.select_one("#buy-now-button"):
         return True
 
-    # Check known stock availability span
     availability = soup.select_one("#availability")
     if availability:
         text = availability.get_text(strip=True).lower()
@@ -76,31 +92,30 @@ def check_stock_amazon(url):
         if "currently unavailable" in text or "temporarily out of stock" in text:
             return False
 
-    # Fallback: check all text
-    page_text = soup.get_text().lower()
-    if "in stock" in page_text:
+    text = soup.get_text().lower()
+    if "only" in text and "left in stock" in text:
         return True
-    if "currently unavailable" in page_text or "temporarily out of stock" in page_text:
+    if "currently unavailable" in text or "temporarily out of stock" in text:
         return False
+    if "in stock" in text:
+        return True
 
     return False
-
 
 def check_stock_marukyu(url, session):
     response = session.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Look for visible stock message
     stock_notice = soup.find("p", class_="stock out-of-stock")
     if stock_notice and "out of stock" in stock_notice.get_text(strip=True).lower():
         return False
 
-    # Check for actual button
     button = soup.select_one("button.single_add_to_cart_button")
-    if button:
-        if button.has_attr("disabled"):
-            return False
+    if button and not button.has_attr("disabled"):
         return True
+
+    if "out of stock" in soup.get_text().lower():
+        return False
 
     return False
 

@@ -9,10 +9,11 @@ PRODUCTS = {
     "Unkaku": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1141020c1",
     "Kiwami Choan": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
     "Cold brew Gyokuro": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5",
-    "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9"
+    "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9",
+    "Ippodo Matcha To Go": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets"
 }
 
-LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account/"
+LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account"
 
 
 # ====== LOGIN TO MARUKYU ======
@@ -24,7 +25,7 @@ def login_to_marukyu():
     response = session.get(LOGIN_URL, headers=headers)
     
     print("=== LOGIN PAGE HTML START ===")
-    print(response.text[:2000])  # Debug print
+    print(response.text[:2000])  # Print first 2000 chars for debugging
     print("=== LOGIN PAGE HTML END ===")
     
     soup = BeautifulSoup(response.text, "html.parser")
@@ -54,7 +55,6 @@ def login_to_marukyu():
         return None
 
 
-
 # ====== STOCK CHECKING ======
 def check_stock_amazon(url):
     headers = {
@@ -78,6 +78,23 @@ def check_stock_marukyu(url, session):
         return True
     return False
 
+
+def check_stock_ippodo(url):
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    add_to_cart_btn = soup.select_one("form[action*='/cart/add'] button[type='submit']")
+    if add_to_cart_btn and not add_to_cart_btn.has_attr("disabled"):
+        return True
+
+    sold_out = soup.find(string=lambda t: t and "sold out" in t.lower())
+    if sold_out:
+        return False
+
+    return False
 
 
 # ====== DISCORD NOTIFY ======
@@ -103,6 +120,8 @@ def main():
         try:
             if "amazon.com" in url:
                 in_stock = check_stock_amazon(url)
+            elif "ippodotea.com" in url:
+                in_stock = check_stock_ippodo(url)
             else:
                 if not session:
                     print(f"[!] Can't check Marukyu item '{name}' without login.")

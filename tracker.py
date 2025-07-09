@@ -28,7 +28,8 @@ PRODUCTS = {
     "Ippodo Kan Matcha": "https://ippodotea.com/collections/matcha/products/kan",
     "Ippodo Ikuyo 100g": "https://ippodotea.com/collections/matcha/products/ikuyo-100",
     "Ippodo Ikuyo": "https://ippodotea.com/collections/matcha/products/ikuyo",
-    "Ippodo Wakaki Shiro": "https://ippodotea.com/collections/matcha/products/wakaki-shiro"
+    "Ippodo Wakaki Shiro": "https://ippodotea.com/collections/matcha/products/wakaki-shiro",
+    "Uji": "https://ippodotea.com/collections/matcha/products/uji-shimizu"
 }
 
 LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account/"

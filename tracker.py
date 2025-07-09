@@ -86,24 +86,27 @@ def check_stock_ippodo(url):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Look for the add to bag button by CSS class
-    add_to_bag_btn = soup.select_one("button.product-form__submit")
-
-    if add_to_bag_btn:
-        # Check if button is disabled
-        if add_to_bag_btn.has_attr("disabled"):
+    button = soup.select_one("button.product-addbtn.btn-primary")
+    if button:
+        # Check if 'disabled' attribute exists
+        if button.has_attr("disabled"):
             return False
-        # Also check if button text contains "add to bag" to be sure
-        if "add to bag" in add_to_bag_btn.get_text(strip=True).lower():
+        
+        # Check inventory count from data attribute
+        inventory = button.get("data-inventory")
+        if inventory and int(inventory) > 0:
+            return True
+        
+        # Fallback: check button text
+        if "add to bag" in button.get_text(strip=True).lower():
             return True
 
-    # If button not found or disabled, also check for sold out text
-    sold_out_text = soup.find(string=lambda t: t and "sold out" in t.lower())
-    if sold_out_text:
+    # Also check for sold out text anywhere just in case
+    if soup.find(string=lambda t: t and "sold out" in t.lower()):
         return False
 
-    # Default fallback
     return False
+
 
 
 

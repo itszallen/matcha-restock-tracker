@@ -14,7 +14,7 @@ PRODUCTS = {
     "Ippodo Sayaka 100g": "https://ippodotea.com/collections/matcha/products/sayaka-100g"
 }
 
-LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/my-account/"
+LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account/"
 
 # ====== LOGIN TO MARUKYU ======
 def login_to_marukyu():

@@ -20,7 +20,6 @@ PRODUCTS = {
     "Omatcha Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1161020c1",
 
     # Amazon test product
-    "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9",
 
     # Ippodo Tea products
     "Ippodo Matcha To-Go Packets": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets",

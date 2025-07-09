@@ -18,32 +18,41 @@ LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/my-account/"
 # ====== LOGIN TO MARUKYU ======
 def login_to_marukyu():
     session = requests.Session()
-    response = session.get(LOGIN_URL)
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    }
+    response = session.get(LOGIN_URL, headers=headers)
+    
+    print("=== LOGIN PAGE HTML START ===")
+    print(response.text[:2000])  # Print first 2000 chars for debugging
+    print("=== LOGIN PAGE HTML END ===")
+    
     soup = BeautifulSoup(response.text, "html.parser")
 
     try:
         token = soup.find("input", {"name": "woocommerce-login-nonce"})["value"]
         referer = soup.find("input", {"name": "_wp_http_referer"})["value"]
-    except:
-        print("❌ Failed to extract login tokens")
+    except Exception as e:
+        print(f"❌ Failed to extract login tokens: {e}")
         return None
 
     payload = {
-        "username": os.environ["allenthehero@gmail.com"],
-        "password": os.environ["pWVu7EyDJcHP!8R"],
+        "username": os.environ["MARUKYU_USER"],
+        "password": os.environ["MARUKYU_PASS"],
         "woocommerce-login-nonce": token,
         "_wp_http_referer": referer,
         "rememberme": "forever",
         "login": "Log in"
     }
 
-    res = session.post(LOGIN_URL, data=payload)
+    res = session.post(LOGIN_URL, data=payload, headers=headers)
     if "logout" in res.text.lower():
         print("✅ Logged into Marukyu successfully")
         return session
     else:
         print("❌ Marukyu login failed")
         return None
+
 
 
 # ====== STOCK CHECKING ======

@@ -10,24 +10,21 @@ PRODUCTS = {
     "Kiwami Choan": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
     "Cold brew Gyokuro": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5",
     "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9",
-    "Ippodo Matcha To Go": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets"
+    "Ippodo Matcha To-Go": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets",
+    "Ippodo Sayaka 100g": "https://ippodotea.com/collections/matcha/products/sayaka-100g"
 }
 
-LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account"
-
+LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/my-account/"
 
 # ====== LOGIN TO MARUKYU ======
 def login_to_marukyu():
     session = requests.Session()
     headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
     }
     response = session.get(LOGIN_URL, headers=headers)
-    
-    print("=== LOGIN PAGE HTML START ===")
-    print(response.text[:2000])  # Print first 2000 chars for debugging
-    print("=== LOGIN PAGE HTML END ===")
-    
+
     soup = BeautifulSoup(response.text, "html.parser")
 
     try:
@@ -54,8 +51,8 @@ def login_to_marukyu():
         print("❌ Marukyu login failed")
         return None
 
+# ====== STOCK CHECK FUNCTIONS ======
 
-# ====== STOCK CHECKING ======
 def check_stock_amazon(url):
     headers = {
         "User-Agent": (
@@ -66,18 +63,25 @@ def check_stock_amazon(url):
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
-    return soup.select_one("#add-to-cart-button") is not None
 
+    # Check for "Add to Cart" button by id or name
+    if soup.select_one("#add-to-cart-button") or soup.select_one("input#add-to-cart-button"):
+        return True
+
+    # Check for "Currently unavailable" message (means out of stock)
+    if soup.find(string=lambda t: t and "currently unavailable" in t.lower()):
+        return False
+
+    # Check for "In Stock" text anywhere
+    if soup.find(string=lambda t: t and "in stock" in t.lower()):
+        return True
+
+    return False
 
 def check_stock_marukyu(url, session):
     response = session.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-
-    add_to_cart_btn = soup.select_one("button.single_add_to_cart_button")
-    if add_to_cart_btn and not add_to_cart_btn.has_attr("disabled"):
-        return True
-    return False
-
+    return bool(soup.select_one("button.single_add_to_cart_button"))
 
 def check_stock_ippodo(url):
     headers = {
@@ -88,27 +92,20 @@ def check_stock_ippodo(url):
 
     button = soup.select_one("button.product-addbtn.btn-primary")
     if button:
-        # Check if 'disabled' attribute exists
         if button.has_attr("disabled"):
             return False
         
-        # Check inventory count from data attribute
         inventory = button.get("data-inventory")
         if inventory and int(inventory) > 0:
             return True
         
-        # Fallback: check button text
         if "add to bag" in button.get_text(strip=True).lower():
             return True
 
-    # Also check for sold out text anywhere just in case
     if soup.find(string=lambda t: t and "sold out" in t.lower()):
         return False
 
     return False
-
-
-
 
 # ====== DISCORD NOTIFY ======
 def notify(name, url):
@@ -123,7 +120,6 @@ def notify(name, url):
         res.raise_for_status()
     except Exception as e:
         print(f"Failed to notify for {name}: {e}")
-
 
 # ====== MAIN ======
 def main():
@@ -149,7 +145,6 @@ def main():
 
         except Exception as e:
             print(f"Error checking {name}: {e}")
-
 
 if __name__ == "__main__":
     main()

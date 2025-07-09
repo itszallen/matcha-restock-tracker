@@ -72,8 +72,12 @@ def check_stock_amazon(url):
 def check_stock_marukyu(url, session):
     response = session.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-    # Look for Add to Cart button — customize selector if needed
-    return bool(soup.select_one("button.single_add_to_cart_button"))
+
+    add_to_cart_btn = soup.select_one("button.single_add_to_cart_button")
+    if add_to_cart_btn and not add_to_cart_btn.has_attr("disabled"):
+        return True
+    return False
+
 
 
 # ====== DISCORD NOTIFY ======

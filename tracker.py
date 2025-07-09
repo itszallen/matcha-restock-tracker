@@ -29,8 +29,8 @@ def login_to_marukyu():
         return None
 
     payload = {
-        "username": os.environ["MARUKYU_USER"],
-        "password": os.environ["MARUKYU_PASS"],
+        "username": os.environ["allenthehero@gmail.com"],
+        "password": os.environ["pWVu7EyDJcHP!8R"],
         "woocommerce-login-nonce": token,
         "_wp_http_referer": referer,
         "rememberme": "forever",

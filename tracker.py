@@ -9,7 +9,6 @@ PRODUCTS = {
     # Marukyu Koyamaen products
     "Unkaku Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1141020c1",
     "Kiwami Choan Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
-    "Cold Brew Gyokuro": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5",
     "Asahi Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/11a1040c1",
     "Sayaka Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1181040c1",
     "Momoyuki Matcha": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1171020c1",
@@ -22,14 +21,12 @@ PRODUCTS = {
     # Amazon test product
 
     # Ippodo Tea products
-    "Ippodo Matcha To-Go Packets": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets",
     "Ippodo Sayaka 100g": "https://ippodotea.com/collections/matcha/products/sayaka-100g",
     "Ippodo Sayaka no Mukashi": "https://ippodotea.com/collections/matcha/products/sayaka-no-mukashi",
     "Ippodo Kan Matcha": "https://ippodotea.com/collections/matcha/products/kan",
     "Ippodo Ikuyo 100g": "https://ippodotea.com/collections/matcha/products/ikuyo-100",
     "Ippodo Ikuyo": "https://ippodotea.com/collections/matcha/products/ikuyo",
     "Ippodo Wakaki Shiro": "https://ippodotea.com/collections/matcha/products/wakaki-shiro",
-    "Uji": "https://ippodotea.com/collections/matcha/products/uji-shimizu"
 }
 
 LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account/"

@@ -12,7 +12,7 @@ PRODUCTS = {
     "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9"
 }
 
-LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/my-account/"
+LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/account/"
 
 
 # ====== LOGIN TO MARUKYU ======

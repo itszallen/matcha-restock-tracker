@@ -63,19 +63,28 @@ def check_stock_amazon(url):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    if soup.select_one("#add-to-cart-button") or soup.select_one("input#add-to-cart-button"):
+    # Check for "add to cart" or "buy now" buttons
+    if soup.select_one("#add-to-cart-button") or soup.select_one("#buy-now-button"):
         return True
 
-    if soup.find(string=lambda t: t and "currently unavailable" in t.lower()):
+    # Check known stock availability span
+    availability = soup.select_one("#availability")
+    if availability:
+        text = availability.get_text(strip=True).lower()
+        if "in stock" in text:
+            return True
+        if "currently unavailable" in text or "temporarily out of stock" in text:
+            return False
+
+    # Fallback: check all text
+    page_text = soup.get_text().lower()
+    if "in stock" in page_text:
+        return True
+    if "currently unavailable" in page_text or "temporarily out of stock" in page_text:
         return False
 
-    if soup.find(string=lambda t: t and "in stock" in t.lower()):
-        return True
-
-    if soup.find(string=lambda t: t and "only" in t.lower() and "left in stock" in t.lower()):
-        return True
-
     return False
+
 
 def check_stock_marukyu(url, session):
     response = session.get(url)

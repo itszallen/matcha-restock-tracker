@@ -10,8 +10,7 @@ PRODUCTS = {
     "Kiwami Choan": "https://www.marukyu-koyamaen.co.jp/english/shop/products/detail/1g36020c1",
     "Cold brew Gyokuro": "https://www.marukyu-koyamaen.co.jp/english/shop/products/1bcf040b5",
     "AMAZON TEST": "https://www.amazon.com/dp/B094FMCST9",
-    "Ippodo Matcha To-Go": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets",
-    "Ippodo Sayaka 100g": "https://ippodotea.com/collections/matcha/products/sayaka-100g"
+    "Ippodo Matcha To-Go": "https://ippodotea.com/collections/matcha/products/matcha-to-go-packets"
 }
 
 LOGIN_URL = "https://www.marukyu-koyamaen.co.jp/english/shop/my-account/"
@@ -24,6 +23,10 @@ def login_to_marukyu():
                       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
     }
     response = session.get(LOGIN_URL, headers=headers)
+
+    print("=== LOGIN PAGE HTML START ===")
+    print(response.text[:2000])  # Debug first 2000 chars
+    print("=== LOGIN PAGE HTML END ===")
 
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -63,20 +66,7 @@ def check_stock_amazon(url):
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
-
-    # Check for "Add to Cart" button by id or name
-    if soup.select_one("#add-to-cart-button") or soup.select_one("input#add-to-cart-button"):
-        return True
-
-    # Check for "Currently unavailable" message (means out of stock)
-    if soup.find(string=lambda t: t and "currently unavailable" in t.lower()):
-        return False
-
-    # Check for "In Stock" text anywhere
-    if soup.find(string=lambda t: t and "in stock" in t.lower()):
-        return True
-
-    return False
+    return soup.select_one("#add-to-cart-button") is not None
 
 def check_stock_marukyu(url, session):
     response = session.get(url)

@@ -24,7 +24,6 @@ def login_to_marukyu():
                       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
     }
     response = session.get(LOGIN_URL, headers=headers)
-
     soup = BeautifulSoup(response.text, "html.parser")
 
     try:
@@ -64,16 +63,16 @@ def check_stock_amazon(url):
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, "html.parser")
 
-    # Check for "Add to Cart" button by id or name
     if soup.select_one("#add-to-cart-button") or soup.select_one("input#add-to-cart-button"):
         return True
 
-    # Check for "Currently unavailable" message (means out of stock)
     if soup.find(string=lambda t: t and "currently unavailable" in t.lower()):
         return False
 
-    # Check for "In Stock" text anywhere
     if soup.find(string=lambda t: t and "in stock" in t.lower()):
+        return True
+
+    if soup.find(string=lambda t: t and "only" in t.lower() and "left in stock" in t.lower()):
         return True
 
     return False
@@ -81,7 +80,20 @@ def check_stock_amazon(url):
 def check_stock_marukyu(url, session):
     response = session.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-    return bool(soup.select_one("button.single_add_to_cart_button"))
+
+    # Look for visible stock message
+    stock_notice = soup.find("p", class_="stock out-of-stock")
+    if stock_notice and "out of stock" in stock_notice.get_text(strip=True).lower():
+        return False
+
+    # Check for actual button
+    button = soup.select_one("button.single_add_to_cart_button")
+    if button:
+        if button.has_attr("disabled"):
+            return False
+        return True
+
+    return False
 
 def check_stock_ippodo(url):
     headers = {
@@ -94,11 +106,11 @@ def check_stock_ippodo(url):
     if button:
         if button.has_attr("disabled"):
             return False
-        
+
         inventory = button.get("data-inventory")
         if inventory and int(inventory) > 0:
             return True
-        
+
         if "add to bag" in button.get_text(strip=True).lower():
             return True
 

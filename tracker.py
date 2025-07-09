@@ -24,7 +24,7 @@ def login_to_marukyu():
     response = session.get(LOGIN_URL, headers=headers)
     
     print("=== LOGIN PAGE HTML START ===")
-    print(response.text[:2000])  # Print first 2000 chars for debugging
+    print(response.text[:2000])  # Debug print
     print("=== LOGIN PAGE HTML END ===")
     
     soup = BeautifulSoup(response.text, "html.parser")
